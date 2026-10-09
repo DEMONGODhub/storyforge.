@@ -9,6 +9,9 @@ This contains everything you need to run your app locally.
 ## Run Locally
 
 **Prerequisites:**  Node.js
+
+</div>
+div>
 later on i will ad ollama so that it can run totely local no cloud computing
 
 1. Install dependencies:
