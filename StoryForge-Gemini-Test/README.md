@@ -5,13 +5,13 @@
 # Run and deploy your AI Studio app
 
 This contains everything you need to run your app locally.
+and i tried making the ui a liitel to good rether then the fetures 
 
 ## Run Locally
 
 **Prerequisites:**  Node.js
 
 </div>
-div>
 later on i will ad ollama so that it can run totely local no cloud computing
 
 1. Install dependencies:
