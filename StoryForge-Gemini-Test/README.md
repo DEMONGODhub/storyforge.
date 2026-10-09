@@ -6,12 +6,10 @@
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/2d4372ae-6789-4b0b-b844-f78b4bb1cb8e
-
 ## Run Locally
 
 **Prerequisites:**  Node.js
-
+later on i will ad ollama so that it can run totely local no cloud computing
 
 1. Install dependencies:
    `npm install`
