@@ -1,0 +1,6 @@
+{
+  "name": "Story Forge - AI-Assisted Storytelling Engine",
+  "description": "AI orchestration layer and story graph architecture with human-in-the-loop canon control, continuity keeping, and twist generation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

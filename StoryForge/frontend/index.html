@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Story Forge</title>
+<meta name="description" content="Where human imagination meets AI.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="view-landing">
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<!-- ============ LANDING ============ -->
+<section id="landing" class="view">
+  <div class="moon big" aria-hidden="true"></div>
+  <div class="landing-inner">
+    <h1 class="logo">STORY FORGE</h1>
+    <p class="tagline">Where human imagination meets AI.</p>
+    <div class="landing-actions">
+      <button class="btn primary lg" id="btnBegin">BEGIN A STORY</button>
+      <button class="btn ghost lg" id="btnContinue">CONTINUE STORY</button>
+    </div>
+    <p class="fine">You are the author. The AI only suggests.</p>
+  </div>
+</section>
+
+<!-- ============ WORKSPACE ============ -->
+<div id="app" class="view" hidden>
+  <header id="topbar">
+    <button class="icon-btn only-small" id="btnNavToggle" aria-label="Open story navigation">☰</button>
+    <div id="moon" class="moon sm" data-state="draft" title="Story state"></div>
+    <input id="storyTitle" class="title-input" aria-label="Story title" placeholder="Untitled story" maxlength="120">
+    <span id="saveState" class="pill" role="status">Draft</span>
+    <span id="apiStatus" class="pill" title="Backend connection">● Backend: checking</span>
+    <div class="spacer"></div>
+    <div class="ctrl-group" role="group" aria-label="Story control">
+      <button class="btn small" id="btnUndo" title="Undo (Ctrl+Z)">↶ UNDO</button>
+      <button class="btn small" id="btnRedo" title="Redo (Ctrl+Shift+Z)">↷ REDO</button>
+      <button class="btn small primary" id="btnSave" title="Save (Ctrl+S)">SAVE</button>
+      <button class="btn small" id="btnVersions">VERSION HISTORY</button>
+      <button class="btn small" id="btnExport">EXPORT</button>
+      <button class="btn small" id="btnSettings">SETTINGS</button>
+      <button class="btn small ghost" id="btnHome" title="Back to landing">⌂</button>
+    </div>
+    <button class="icon-btn only-small" id="btnTreeToggle" aria-label="Open story tree">✦</button>
+    <button class="icon-btn only-small" id="btnAiToggle" aria-label="Open AI suggestions">✧</button>
+  </header>
+
+  <div id="workspace">
+    <!-- LEFT: navigation -->
+    <aside id="nav" aria-label="Story navigation">
+      <div class="nav-head">
+        <h2>STORY MAP</h2>
+        <button class="icon-btn only-small" id="btnNavClose" aria-label="Close">✕</button>
+      </div>
+      <ul id="navList" class="nav-list"></ul>
+      <div class="nav-add">
+        <label for="addType">Add to selected node</label>
+        <div class="row">
+          <select id="addType">
+            <option value="chapter">Chapter</option>
+            <option value="scene">Scene</option>
+            <option value="character">Character</option>
+            <option value="event">Event</option>
+            <option value="location">Location</option>
+            <option value="mystery">Mystery</option>
+            <option value="twist">Twist</option>
+            <option value="idea">Idea</option>
+          </select>
+          <button class="btn small" id="btnAddNode">+ ADD</button>
+        </div>
+      </div>
+      <div class="legend" aria-label="Origin legend">
+        <h3>ORIGIN</h3>
+        <ul>
+          <li><span class="badge human">★ HUMAN</span> canonical</li>
+          <li><span class="badge ai">◆ AI</span> proposed</li>
+          <li><span class="badge edited">✎ EDITED</span> human-edited AI</li>
+          <li><span class="badge rejected">✕ REJECTED</span> muted</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- CENTER: writing -->
+    <main id="center">
+      <div id="editorTools">
+        <button class="btn small" id="btnDelSentence" title="Delete the sentence at the cursor">DELETE SENTENCE</button>
+        <button class="btn small" id="btnDelLine" title="Delete the paragraph at the cursor">DELETE LINE</button>
+        <button class="btn small" id="btnRestore" title="Restore the human text an AI passage replaced" disabled>RESTORE ORIGINAL</button>
+        <label class="check"><input type="checkbox" id="chkMarks" checked> Show AI marks</label>
+        <span class="spacer"></span>
+        <span id="wordCount" class="muted">0 words</span>
+      </div>
+      <div id="paper">
+        <div id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true"
+             aria-label="Story manuscript" data-placeholder="Begin your story here — type, or speak below…"></div>
+      </div>
+      <div id="selToolbar" role="toolbar" aria-label="Selection actions" hidden>
+        <button data-act="rewrite">Rewrite</button>
+        <button data-act="expand">Expand</button>
+        <button data-act="shorten">Shorten</button>
+        <button data-act="delete" class="danger">Delete</button>
+        <button data-act="suggest" class="accent">AI Suggest</button>
+      </div>
+    </main>
+
+    <!-- RIGHT: tree / AI / inspector -->
+    <aside id="side" data-tab="tree" aria-label="Story memory and AI">
+      <div class="side-head">
+        <div class="tabs" role="tablist">
+          <button class="tab active" role="tab" data-tab="tree">STORY TREE</button>
+          <button class="tab" role="tab" data-tab="ai">AI</button>
+          <button class="tab" role="tab" data-tab="inspect">INSPECTOR</button>
+        </div>
+        <button class="icon-btn only-small" id="btnSideClose" aria-label="Close panel">✕</button>
+      </div>
+
+      <section id="panelTree" class="panel">
+        <div class="tree-tools">
+          <button class="btn small" id="zoomIn" aria-label="Zoom in">＋</button>
+          <button class="btn small" id="zoomOut" aria-label="Zoom out">－</button>
+          <button class="btn small" id="zoomFit">FIT</button>
+          <button class="btn small" id="btnExpandAll">EXPAND ALL</button>
+          <button class="btn small" id="btnAnalyze" title="Ask the backend to propose nodes from your text">ANALYZE TEXT</button>
+        </div>
+        <div id="treeWrap"><svg id="treeSvg" role="img" aria-label="Story tree"></svg></div>
+        <p class="hint">Drag to pan · scroll or pinch buttons to zoom · click a node to inspect · ▸/▾ to fold</p>
+      </section>
+
+      <section id="panelAi" class="panel" hidden>
+        <div class="ai-actions" id="aiActions"></div>
+        <div id="aiStatus" class="notice" hidden></div>
+        <h3 class="sub">PENDING SUGGESTIONS</h3>
+        <div id="aiPending" class="cards"><p class="empty">Nothing waiting. Suggestions only appear when you ask for them, and never change your story until you accept.</p></div>
+        <h3 class="sub">SUGGESTION HISTORY</h3>
+        <div id="aiHistory" class="cards"></div>
+      </section>
+
+      <section id="panelInspect" class="panel" hidden>
+        <div id="inspector"><p class="empty">Select a node in the Story Tree to inspect it.</p></div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- BOTTOM: voice -->
+  <footer id="voiceBar">
+    <div id="rawBox" class="raw" hidden>
+      <div class="raw-head"><strong>RAW VOICE</strong><span class="muted">transcript before any AI processing — edit freely</span></div>
+      <textarea id="rawText" rows="2" aria-label="Raw voice transcript"></textarea>
+      <div class="row">
+        <button class="btn small" id="btnUseRaw">USE RAW</button>
+        <button class="btn small primary" id="btnImprove">IMPROVE WITH AI</button>
+        <button class="btn small ghost" id="btnDiscardRaw">DISCARD</button>
+      </div>
+    </div>
+    <div class="mic-row">
+      <div id="levels" class="levels" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <button id="mic" data-state="IDLE" aria-label="Voice input"><span class="mic-icon">🎙</span></button>
+      <div id="micLabel" class="mic-label" role="status">IDLE · tap to speak</div>
+      <button class="btn small ghost" id="btnTypeRaw" title="Type raw notes without a microphone">TYPE RAW IDEA</button>
+    </div>
+  </footer>
+</div>
+<div id="scrim" hidden></div>
+
+<!-- ============ DIALOGS ============ -->
+<dialog id="reviewDlg">
+  <form method="dialog" id="reviewForm">
+    <h2 id="reviewTitle">AI SUGGESTION</h2>
+    <p class="muted" id="reviewWhy"></p>
+    <div class="compare">
+      <div><h3>ORIGINAL</h3><div id="reviewOriginal" class="cmp-box human-box"></div></div>
+      <div><h3>AI SUGGESTION</h3><div id="reviewSuggestion" class="cmp-box ai-box" role="textbox" aria-label="AI suggestion"></div></div>
+    </div>
+    <div class="dlg-actions">
+      <button type="button" class="btn primary" id="rvAccept">ACCEPT</button>
+      <button type="button" class="btn" id="rvEdit">EDIT</button>
+      <button type="button" class="btn danger" id="rvReject">REJECT</button>
+      <button type="button" class="btn ghost" id="rvLater">DECIDE LATER</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="settingsDlg">
+  <form method="dialog">
+    <h2>STORY SETTINGS</h2>
+    <div class="grid2">
+      <label>Genre<input id="setGenre" placeholder="e.g. dark fantasy"></label>
+      <label>Tone<input id="setTone" placeholder="e.g. brooding, lyrical"></label>
+      <label>Point of view
+        <select id="setPov"><option>Third person limited</option><option>Third person omniscient</option><option>First person</option><option>Second person</option></select></label>
+      <label>Voice language
+        <select id="setLang"><option value="en">English</option><option value="hi">Hindi</option><option value="auto">Auto-detect</option></select></label>
+      <label class="wide">Backend URL<input id="setApi" placeholder="http://127.0.0.1:8000"></label>
+      <label class="wide check"><input type="checkbox" id="setMotion"> Reduce background animation</label>
+    </div>
+    <h3>Developer</h3>
+    <p class="muted">Loads clearly labelled <b>[SAMPLE]</b> nodes and one sample suggestion so you can try the interface without a backend. Nothing here is real AI output.</p>
+    <div class="row">
+      <button type="button" class="btn small" id="btnSampleNodes">LOAD SAMPLE NODES</button>
+      <button type="button" class="btn small" id="btnSampleSuggestion">LOAD SAMPLE SUGGESTION</button>
+      <button type="button" class="btn small danger" id="btnResetStory">RESET STORY</button>
+    </div>
+    <div class="dlg-actions"><button class="btn primary" value="close">DONE</button></div>
+  </form>
+</dialog>
+
+<dialog id="versionsDlg">
+  <form method="dialog">
+    <h2>VERSION HISTORY</h2>
+    <div class="row"><input id="verLabel" placeholder="Label this version (optional)"><button type="button" class="btn small primary" id="btnSnap">SAVE VERSION</button></div>
+    <ul id="verList" class="ver-list"></ul>
+    <div class="dlg-actions"><button class="btn" value="close">CLOSE</button></div>
+  </form>
+</dialog>
+
+<dialog id="exportDlg">
+  <form method="dialog">
+    <h2>EXPORT YOUR BOOK</h2>
+    <div class="grid2">
+      <label>Format
+        <select id="expFormat">
+          <option value="md">Markdown (.md)</option>
+          <option value="txt">Plain text (.txt)</option>
+          <option value="html">HTML (.html)</option>
+          <option value="pdf">PDF (needs backend)</option>
+        </select></label>
+      <label class="check"><input type="checkbox" id="expMarks"> Mark AI-written passages</label>
+    </div>
+    <h3>Preview</h3>
+    <pre id="expPreview" class="preview"></pre>
+    <p id="expMsg" class="notice" hidden></p>
+    <div class="dlg-actions">
+      <button type="button" class="btn primary" id="btnDoExport">DOWNLOAD</button>
+      <button class="btn ghost" value="close">CLOSE</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

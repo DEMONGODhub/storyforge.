@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story Forge</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <div class="brand">
+        <h1>Story Forge</h1>
+        <span class="tagline">AI-Assisted Storytelling Architecture</span>
+      </div>
+      <div class="header-actions">
+        <span id="backend-status" class="status-badge">Checking backend...</span>
+        <button id="btn-export-pdf" class="btn btn-secondary">Export PDF</button>
+      </div>
+    </header>
+
+    <main class="main-layout">
+      <!-- Input & Canon Workspace -->
+      <section class="panel writer-panel">
+        <h2>1. Story Input & Canon Control</h2>
+        <p class="panel-desc">Speak or type raw story ideas. AI suggests, but the writer always has final control.</p>
+
+        <div class="input-controls">
+          <textarea id="raw-input" placeholder="e.g. under the blue sky a man with black clock in his back standing on a mountain cliff wispering th name of his parents..."></textarea>
+          <div class="button-row">
+            <button id="btn-mic" class="btn btn-mic">🎤 Speak</button>
+            <button id="btn-clean" class="btn btn-primary">Clean / Interpret (Listener)</button>
+            <button id="btn-analyze" class="btn btn-accent">Deconstruct (Story Architect)</button>
+          </div>
+        </div>
+
+        <div class="canon-comparison">
+          <div class="canon-column raw-col">
+            <h3>Raw Human Input (Verbatim)</h3>
+            <div id="display-raw" class="text-box">No input yet.</div>
+          </div>
+          <div class="canon-column ai-col">
+            <h3>AI Proposed Interpretation</h3>
+            <div id="display-ai" class="text-box">No interpretation yet.</div>
+            <div class="canon-decision-row">
+              <button id="btn-accept" class="btn btn-success" disabled>Accept as Canon</button>
+              <button id="btn-edit" class="btn btn-warning" disabled>Edit & Approve</button>
+              <button id="btn-reject" class="btn btn-danger" disabled>Reject</button>
+            </div>
+          </div>
+          <div class="canon-column canon-col">
+            <h3>Canonical Story Text</h3>
+            <div id="display-canonical" class="text-box canonical-box">No canonical text approved yet.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Orchestration & Story Graph -->
+      <section class="panel tools-panel">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="graph">Story Graph</button>
+          <button class="tab-btn" data-tab="continuity">Continuity Keeper</button>
+          <button class="tab-btn" data-tab="twists">Twist Engine</button>
+          <button class="tab-btn" data-tab="creative">Creative Co-Author</button>
+        </div>
+
+        <div id="tab-graph" class="tab-content active">
+          <div class="tab-header">
+            <h3>Narrative Topology (Nodes & Edges)</h3>
+            <button id="btn-refresh-graph" class="btn btn-small">Refresh Graph</button>
+          </div>
+          <div id="graph-summary" class="graph-container">
+            <div class="entities-grid">
+              <div class="entity-category">
+                <h4>Characters</h4>
+                <div id="characters-list" class="badge-list">None yet</div>
+              </div>
+              <div class="entity-category">
+                <h4>Locations</h4>
+                <div id="locations-list" class="badge-list">None yet</div>
+              </div>
+              <div class="entity-category">
+                <h4>Events</h4>
+                <div id="events-list" class="badge-list">None yet</div>
+              </div>
+              <div class="entity-category">
+                <h4>Mysteries</h4>
+                <div id="mysteries-list" class="badge-list">None yet</div>
+              </div>
+            </div>
+            <div class="edges-section">
+              <h4>Relationships & Dependencies</h4>
+              <ul id="edges-list" class="edges-list"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-continuity" class="tab-content">
+          <div class="tab-header">
+            <h3>Continuity & Knowledge Auditing</h3>
+            <button id="btn-check-continuity" class="btn btn-primary">Run Continuity Check</button>
+          </div>
+          <textarea id="continuity-input" placeholder="Draft text to audit for contradictions or knowledge violations..."></textarea>
+          <div id="continuity-results" class="results-list"></div>
+        </div>
+
+        <div id="tab-twists" class="tab-content">
+          <div class="tab-header">
+            <h3>Twist Engine (Graph Grounded)</h3>
+            <button id="btn-generate-twists" class="btn btn-primary">Generate Twists</button>
+          </div>
+          <div id="twists-results" class="results-list">Click 'Generate Twists' to synthesize plot twists with graph evidence.</div>
+        </div>
+
+        <div id="tab-creative" class="tab-content">
+          <div class="tab-header">
+            <h3>Creative Co-Author Proposals</h3>
+            <button id="btn-get-suggestions" class="btn btn-primary">Brainstorm Options</button>
+          </div>
+          <div id="creative-results" class="results-list">Click 'Brainstorm Options' to see sensory descriptions and dialogue choices.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
