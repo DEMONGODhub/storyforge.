@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Story Forge emblem">
+  <title>Story Forge emblem</title>
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#b9a4ff" stop-opacity=".30"/>
+      <stop offset="1" stop-color="#b9a4ff" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="cres">
+      <rect width="240" height="240" fill="#fff"/>
+      <circle cx="140" cy="110" r="40" fill="#000"/>
+    </mask>
+  </defs>
+  <style>
+    .spin{transform-box:view-box;transform-origin:50% 50%;animation:spin 120s linear infinite}
+    .spin.rev{animation-duration:180s;animation-direction:reverse}
+    .tw{animation:tw 5s ease-in-out infinite}
+    .tw.b{animation-delay:1.6s}.tw.c{animation-delay:3.1s}
+    .fade{animation:in 1.6s ease-out both}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes tw{0%,100%{opacity:.55}50%{opacity:1}}
+    @keyframes in{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+    @media (prefers-reduced-motion:reduce){.spin,.tw,.fade{animation:none}}
+  </style>
+  <circle cx="120" cy="120" r="116" fill="url(#halo)"/>
+  <!-- outer orbit: story development -->
+  <g class="spin">
+    <circle cx="120" cy="120" r="104" fill="none" stroke="#b9a4ff" stroke-opacity=".38" stroke-width="1" stroke-dasharray="2 7"/>
+    <circle cx="120" cy="16" r="4.5" fill="#e8c987"/>
+    <circle cx="210" cy="172" r="3.5" fill="#b9a4ff"/>
+    <circle cx="30" cy="172" r="3.5" fill="#b9a4ff"/>
+  </g>
+  <!-- inner orbit -->
+  <g class="spin rev">
+    <circle cx="120" cy="120" r="76" fill="none" stroke="#b9a4ff" stroke-opacity=".22" stroke-width="1"/>
+    <circle cx="196" cy="120" r="3" fill="#e9e4f5"/>
+  </g>
+  <!-- the crescent: story / session -->
+  <g class="fade" style="transform-box:view-box;transform-origin:50% 50%">
+    <circle cx="120" cy="120" r="46" fill="#e9e4f5" mask="url(#cres)"/>
+    <!-- constellation of one idea branching into possibilities -->
+    <g stroke="#b9a4ff" stroke-width="1.2" stroke-linecap="round" fill="none">
+      <path d="M146 96 L164 120 L152 146"/>
+      <path d="M164 120 L186 118" stroke-dasharray="3 4" stroke-opacity=".8"/>
+    </g>
+    <circle class="tw" cx="146" cy="96" r="3.2" fill="#fff"/>
+    <circle class="tw b" cx="164" cy="120" r="4" fill="#e8c987"/>
+    <circle class="tw c" cx="152" cy="146" r="3" fill="#fff"/>
+    <circle class="tw b" cx="186" cy="118" r="2.4" fill="#b9a4ff"/>
+  </g>
+</svg>

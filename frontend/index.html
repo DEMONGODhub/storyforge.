@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Story Forge</title>
+<meta name="description" content="Where human imagination meets AI.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="view-landing">
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<!-- ============ LANDING ============ -->
+<section id="landing" class="view">
+  <img class="art orbit" src="assets/background-orbit.svg" alt="" aria-hidden="true">
+  <img class="art moon-art" src="assets/moon.svg" alt="" aria-hidden="true">
+  <img class="art constellation" src="assets/constellation.svg" alt="" aria-hidden="true">
+  <div class="landing-inner">
+    <img class="emblem" src="assets/story-forge-logo.svg" alt="Story Forge emblem: a crescent moon with a constellation branching into story possibilities" width="220" height="220">
+    <h1 class="logo">STORY FORGE</h1>
+    <p class="tagline">Where human imagination<br>meets AI.</p>
+    <button class="btn primary lg" id="btnBegin">Begin a Story</button>
+    <div class="landing-links"><button class="link" id="btnContinue" hidden>Continue your last story</button><button class="link" id="btnImportLanding">Import a book</button></div>
+    <input type="file" id="fileImport" accept=".json,.md,.markdown,.html,.htm,.txt,application/json,text/markdown,text/html,text/plain" hidden>
+  </div>
+  <p class="fine">AI can suggest. The writer always has final control.</p>
+</section>
+
+<!-- ============ WORKSPACE ============ -->
+<div id="app" class="view" hidden>
+  <header id="topbar">
+    <button class="icon-btn only-small" id="btnNavToggle" aria-label="Open story navigation">☰</button>
+    <div id="moon" class="moon sm" data-state="draft" title="Moon phase shows save state: crescent = unsaved, full = saved"></div>
+    <input id="storyTitle" class="title-input" aria-label="Story title" placeholder="Untitled story" maxlength="120">
+    <span id="saveState" class="pill" role="status">Draft</span>
+    <div class="spacer"></div>
+    <button type="button" id="apiStatus" class="pill pill-btn" title="Choose the AI: on this computer, or with your own API key" aria-haspopup="dialog">○ AI offline</button>
+    <div class="ctrl-group" role="group" aria-label="Story control">
+      <button class="btn small ghost" id="btnUndo" title="Undo (Ctrl+Z)">↶ Undo</button>
+      <button class="btn small ghost" id="btnRedo" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
+      <button class="btn small primary" id="btnSave" title="Save (Ctrl+S)">Save</button>
+      <button class="btn small ghost" id="btnPanel" title="Show or hide the story graph and AI panel" aria-pressed="true">Graph &amp; AI</button>
+      <button class="btn small" id="btnExport">Export</button>
+      <div class="menu-wrap">
+        <button class="btn small ghost" id="btnMore" aria-haspopup="menu" aria-expanded="false">⋯ More</button>
+        <div id="moreMenu" role="menu" hidden>
+          <button role="menuitem" id="btnExport2" class="only-small">Export</button>
+          <button role="menuitem" id="btnSaveFile">Save to computer<kbd>Ctrl+Shift+S</kbd></button>
+          <button role="menuitem" id="btnImport">Import book…</button>
+          <button role="menuitem" id="btnVersions">Version history</button>
+          <button role="menuitem" id="btnSettings">Story settings</button>
+          <label class="menu-check"><input type="checkbox" id="chkMarks" checked> Highlight AI passages</label>
+          <button role="menuitem" id="btnHome">Back to home</button>
+        </div>
+      </div>
+    </div>
+    <button class="icon-btn only-small" id="btnTreeToggle" aria-label="Open story graph">✦</button>
+    <button class="icon-btn only-small" id="btnAiToggle" aria-label="Open AI suggestions">✧</button>
+  </header>
+
+  <div id="workspace">
+    <!-- LEFT: navigation -->
+    <aside id="nav" aria-label="Story navigation">
+      <div class="nav-head">
+        <h2>Story map</h2>
+        <button class="icon-btn only-small" id="btnNavClose" aria-label="Close">✕</button>
+      </div>
+      <ul id="navList" class="nav-list"></ul>
+      <div class="nav-add" id="navAdd" hidden>
+        <label for="addType">Add a note to the selected item</label>
+        <div class="row">
+          <select id="addType">
+            <option value="character">Character</option>
+            <option value="event">Event</option>
+            <option value="location">Location</option>
+            <option value="mystery">Mystery</option>
+            <option value="twist">Twist</option>
+            <option value="idea">Idea</option>
+          </select>
+          <button class="btn small" id="btnAddNode">+ Add</button>
+        </div>
+      </div>
+      <section class="howto" aria-label="How to shape your book">
+        <h3>Shape your book</h3>
+        <ul>
+          <li><span class="keys"><kbd>#</kbd></span><span>on a new line, then choose chapter or scene</span></li>
+          <li><span class="keys"><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>1</kbd></span><span>this line becomes a chapter (bold)</span></li>
+          <li><span class="keys"><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>2</kbd></span><span>this line becomes a scene</span></li>
+          <li><span class="keys"><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>0</kbd></span><span>back to plain text</span></li>
+        </ul>
+        <p class="muted">Click a chapter or scene above to jump to it. On a Mac, use ⌘ in place of Ctrl.</p>
+      </section>
+    </aside>
+
+    <!-- CENTER: writing -->
+    <main id="center">
+      <div id="editorTools">
+        <button class="btn small ghost" id="btnDelSentence" title="Delete the sentence at the cursor">Delete sentence</button>
+        <button class="btn small ghost" id="btnDelLine" title="Delete the paragraph at the cursor">Delete line</button>
+        <button class="btn small" id="btnRestore" title="Put back the human text this AI passage replaced" hidden>Restore original</button>
+        <span class="spacer"></span>
+        <span id="wordCount" class="muted">0 words</span>
+      </div>
+      <div id="paper">
+        <header id="pageHead"><h2 id="pageTitle" class="is-placeholder">Untitled story</h2><div class="orn" aria-hidden="true"><i></i><i></i><i></i></div></header>
+        <div id="editor" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true"
+             aria-label="Story manuscript" data-placeholder="Begin your story here — type, or speak below…"></div>
+      </div>
+      <div id="selToolbar" role="toolbar" aria-label="Selection actions" hidden>
+        <button data-act="rewrite" class="needs-ai">Rewrite</button>
+        <button data-act="expand" class="needs-ai">Expand</button>
+        <button data-act="shorten" class="needs-ai">Shorten</button>
+        <button data-act="delete" class="danger">Delete</button>
+        <button data-act="suggest" class="accent needs-ai">AI Suggest</button>
+      </div>
+<!-- Voice dock (floats over the page) -->
+  <div id="voiceBar">
+    <div id="rawBox" class="raw" hidden>
+      <div class="raw-head"><strong>Raw voice</strong><span class="muted">transcript before any AI processing — edit freely</span></div>
+      <textarea id="rawText" rows="2" aria-label="Raw voice transcript"></textarea>
+      <div class="row">
+        <button class="btn small" id="btnUseRaw">Use raw</button>
+        <button class="btn small primary needs-ai" id="btnImprove">Improve with AI</button>
+        <button class="btn small ghost" id="btnDiscardRaw">Discard</button>
+      </div>
+    </div>
+    <div class="mic-row">
+      <div id="levels" class="levels" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <button id="mic" data-state="IDLE" aria-pressed="false" aria-label="Speak">
+        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-6a3.5 3.5 0 0 0-7 0v6A3.5 3.5 0 0 0 12 15Zm6-3.5a1 1 0 1 0-2 0 4 4 0 0 1-8 0 1 1 0 1 0-2 0 6 6 0 0 0 5 5.91V20H9.5a1 1 0 1 0 0 2h5a1 1 0 1 0 0-2H13v-2.59A6 6 0 0 0 18 11.5Z"/></svg>
+      </button>
+      <div id="micLabel" class="mic-label" role="status" aria-live="polite"><strong id="micMain">Speak</strong><small id="micSub">Tap the microphone and say your idea</small></div>
+      <button class="btn small ghost" id="btnTypeRaw" title="Type a raw idea instead of speaking">Type instead</button>
+    </div>
+  </div>
+    </main>
+
+    <!-- RIGHT: tree / AI / inspector -->
+    <aside id="side" data-tab="tree" aria-label="Story memory and AI">
+      <div class="side-head">
+        <div class="tabs" role="tablist">
+          <button class="tab active" role="tab" data-tab="tree">Graph</button>
+          <button class="tab" role="tab" data-tab="ai">AI</button>
+          <button class="tab" role="tab" data-tab="inspect">Details</button>
+        </div>
+        <button class="icon-btn only-small" id="btnSideClose" aria-label="Close panel">✕</button>
+      </div>
+
+      <section id="panelTree" class="panel">
+        <div id="graphEmpty" class="empty-state" hidden>
+          <svg viewBox="0 0 120 60" width="120" height="60" aria-hidden="true"><path d="M10 40 L45 18 L80 34 L110 12" fill="none" stroke="#b9a4ff" stroke-opacity=".5" stroke-dasharray="3 5"/><circle cx="10" cy="40" r="3" fill="#b9a4ff"/><circle cx="45" cy="18" r="4" fill="#e8c987"/><circle cx="80" cy="34" r="3" fill="#b9a4ff"/><circle cx="110" cy="12" r="3" fill="#b9a4ff"/></svg>
+          <h3>Your story graph starts with a chapter</h3>
+          <p>The graph appears once you have marked a chapter or scene in the page.</p>
+          <ol>
+            <li>Click an empty line on the page and type <kbd>#</kbd></li>
+            <li>Choose <b>Chapter</b> or <b>Scene</b></li>
+            <li>Type its title, then press Enter</li>
+          </ol>
+        </div>
+        <div class="tree-tools">
+          <button class="btn small" id="zoomIn" aria-label="Zoom in">＋</button>
+          <button class="btn small" id="zoomOut" aria-label="Zoom out">－</button>
+          <button class="btn small" id="zoomFit">Fit</button>
+          <button class="btn small" id="btnExpandAll">Expand all</button>
+          <button class="btn small needs-ai" id="btnAnalyze" title="Ask the AI to propose graph nodes from your text">Analyze text</button>
+        </div>
+        <div id="treeWrap"><svg id="treeSvg" role="img" aria-label="Story graph"></svg></div>
+        <div id="selStrip" class="strip"><span id="selName" class="muted">Nothing selected</span><button class="btn small" id="btnOpenDetails">Open details</button></div>
+        <p class="hint">Drag to pan · scroll to zoom · click a node for details · ▸/▾ folds a branch</p>
+      </section>
+
+      <section id="panelAi" class="panel" hidden>
+        <div class="ai-actions" id="aiActions"></div>
+        <div id="aiOffline" class="notice soft">AI isn’t connected yet. Suggestions will appear here once the backend is running — every writing tool on the page works without it.</div>
+        <div id="aiStatus" class="notice" hidden></div>
+        <h3 class="sub">Waiting for your decision</h3>
+        <div id="aiPending" class="cards"><p class="empty">Nothing waiting. Suggestions only appear when you ask for them, and never change your story until you accept.</p></div>
+        <h3 class="sub">History</h3>
+        <div id="aiHistory" class="cards"></div>
+        <details class="legend">
+          <summary>Who wrote it? — key</summary>
+          <ul>
+            <li><span class="badge human">★ HUMAN WRITTEN</span> your own words</li>
+            <li><span class="badge proposed">◆ AI PROPOSED</span> awaiting your decision</li>
+            <li><span class="badge accepted">✓ AI MADE · YOU ACCEPTED</span> AI idea you approved</li>
+            <li><span class="badge edited">✎ AI MADE · YOU EDITED</span> AI idea you changed</li>
+            <li><span class="badge rejected">✕ REJECTED</span> kept in history only</li>
+          </ul>
+        </details>
+      </section>
+
+      <section id="panelInspect" class="panel" hidden>
+        <div id="inspector"><p class="empty">Select a node in the Story Tree to inspect it.</p></div>
+      </section>
+    </aside>
+  </div>
+
+  
+</div>
+<div id="scrim" hidden></div>
+
+<!-- ============ DIALOGS ============ -->
+<dialog id="reviewDlg">
+  <form method="dialog" id="reviewForm">
+    <h2 id="reviewTitle">Compare</h2>
+    <p class="muted" id="reviewWhy"></p>
+    <div class="compare">
+      <div><h3>Your original</h3><div id="reviewOriginal" class="cmp-box human-box"></div></div>
+      <div><h3>AI suggestion</h3><div id="reviewSuggestion" class="cmp-box ai-box" role="textbox" aria-label="AI suggestion"></div></div>
+    </div>
+    <div class="dlg-actions">
+      <button type="button" class="btn primary" id="rvAccept">Accept</button>
+      <button type="button" class="btn" id="rvEdit">Edit</button>
+      <button type="button" class="btn danger" id="rvReject">Reject</button>
+      <button type="button" class="btn ghost" id="rvLater">Decide later</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="aiDlg">
+  <form method="dialog" id="aiForm">
+    <h2>Which AI should help?</h2>
+    <p class="muted">The AI only suggests. You stay the author. Switch whenever you like; your keys are kept for next time.</p>
+    <div class="seg" role="radiogroup" aria-label="AI engine">
+      <button type="button" class="seg-b" id="engLocal" role="radio"><b>Local</b><span>Ollama on this computer · private · free</span></button>
+      <button type="button" class="seg-b" id="engCloud" role="radio"><b>Cloud</b><span>Your own API key · much faster</span></button>
+    </div>
+    <div id="aiLocalBox" class="grid2">
+      <label class="wide">Ollama model<input id="aiLocalModel" placeholder="llama3.2:1b"></label>
+      <p class="muted wide" id="aiLocalNote">Runs entirely on this computer. Nothing leaves it.</p>
+    </div>
+    <div id="aiCloudBox" class="grid2" hidden>
+      <label>Provider<select id="aiProv"><option value="openai">OpenAI-compatible</option><option value="anthropic">Anthropic Claude</option><option value="gemini">Google Gemini</option></select></label>
+      <label>Model<input id="aiModel" placeholder="model name"></label>
+      <label class="wide" id="aiBaseRow">Base URL<input id="aiBase" placeholder="https://api.openai.com/v1"></label>
+      <label class="wide">API key<input id="aiKey" type="password" autocomplete="off" spellcheck="false" placeholder="paste your key"></label>
+      <p class="muted wide" id="aiKeyNote"></p>
+      <p class="notice soft wide">With a cloud AI, the passage you ask about (plus your story notes) is sent to that provider. Your key is stored only in this app&rsquo;s data folder on this computer.</p>
+    </div>
+    <p id="aiMsg" class="muted" role="status"></p>
+    <div class="row">
+      <button type="button" class="btn primary" id="aiSave">Save &amp; use this</button>
+      <button type="button" class="btn" id="aiTest">Test it</button>
+      <button type="button" class="btn ghost" id="aiClear" hidden>Forget key</button>
+      <span class="spacer"></span>
+      <button class="btn ghost" value="close">Close</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="settingsDlg">
+  <form method="dialog">
+    <h2>Story settings</h2>
+    <div class="grid2">
+      <label>Genre<input id="setGenre" placeholder="e.g. dark fantasy"></label>
+      <label>Tone<input id="setTone" placeholder="e.g. brooding, lyrical"></label>
+      <label>Point of view
+        <select id="setPov"><option>Third person limited</option><option>Third person omniscient</option><option>First person</option><option>Second person</option></select></label>
+      <label>Voice language
+        <select id="setLang"><option value="en">English</option><option value="hi">Hindi</option><option value="auto">Auto-detect</option></select></label>
+      <label class="wide">Backend URL<input id="setApi" placeholder="http://127.0.0.1:8000"></label>
+      <label class="wide check"><input type="checkbox" id="setMotion"> Reduce background animation</label>
+    </div>
+    <div id="devBox" hidden>
+      <h3>Preview tools (add <code>?dev=1</code> to the URL)</h3>
+      <p class="muted">Loads clearly labelled <b>[SAMPLE]</b> content so the interface can be previewed without a backend. Nothing here is AI output.</p>
+      <div class="row">
+        <button type="button" class="btn small" id="btnSampleNodes">Load sample nodes</button>
+        <button type="button" class="btn small" id="btnSampleSuggestion">Load sample suggestion</button>
+      </div>
+    </div>
+    <h3>Danger zone</h3>
+    <div class="row"><button type="button" class="btn small danger" id="btnResetStory">Reset story</button><span class="muted">Saved versions are kept.</span></div>
+    <div class="dlg-actions"><button class="btn primary" value="close">Done</button></div>
+  </form>
+</dialog>
+
+<dialog id="versionsDlg">
+  <form method="dialog">
+    <h2>Version history</h2>
+    <div class="row"><input id="verLabel" placeholder="Label this version (optional)"><button type="button" class="btn small primary" id="btnSnap">Save version</button></div>
+    <ul id="verList" class="ver-list"></ul>
+    <div class="dlg-actions"><button class="btn" value="close">Close</button></div>
+  </form>
+</dialog>
+
+<dialog id="exportDlg">
+  <form method="dialog">
+    <h2>Export your book</h2>
+    <div class="grid2">
+      <label>Format
+        <select id="expFormat">
+          <option value="json">Story Forge book (.storyforge.json) — full backup</option>
+          <option value="md">Markdown (.md) — text, chapters, scenes</option>
+          <option value="txt">Plain text (.txt) — reading copy only</option>
+          <option value="html">Web page (.html) — readable, and re-importable</option>
+          <option value="pdf">PDF — needs the backend</option>
+        </select></label>
+      <label class="check"><input type="checkbox" id="expMarks"> Mark AI-written passages</label>
+    </div>
+    <details class="howsave" open>
+      <summary>Keep your book safe on your computer</summary>
+      <ol>
+        <li>Choose <b>Story Forge book</b> and press <b>Download</b>. Pick a folder you will remember. Next time, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> saves to the same file.</li>
+        <li>Turn your PC off whenever you like. The file stays on your disk.</li>
+        <li>Later, open Story Forge and choose <b>Import a book</b>. Your text, chapters, scenes and graph come back exactly as you left them.</li>
+      </ol>
+      <p class="muted">The Markdown file restores your text, chapters and scenes. Only the Story Forge book also restores characters, events, relationships and suggestion history.</p>
+    </details>
+    <p id="expHelp" class="muted"></p>
+    <h3>Preview</h3>
+    <pre id="expPreview" class="preview"></pre>
+    <p id="expMsg" class="notice" hidden></p>
+    <div class="dlg-actions">
+      <button type="button" class="btn primary" id="btnDoExport">Download</button>
+      <button class="btn ghost" value="close">Close</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="blockMenu" role="listbox" aria-label="Turn this line into" hidden>
+  <p>Turn this line into</p>
+  <button role="option" data-kind="chapter" aria-selected="true"><b>Chapter</b><span>Bold heading. Appears in the story map and graph.</span><kbd>1</kbd></button>
+  <button role="option" data-kind="scene" aria-selected="false"><b>Scene</b><span>Normal text, marked as a scene on the page.</span><kbd>2</kbd></button>
+  <small>↑ ↓ and Enter to choose · Esc to cancel</small>
+</div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

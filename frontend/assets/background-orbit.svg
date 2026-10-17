@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-label="Orbital rings">
+  <title>Orbital rings</title>
+  <style>
+    .r{fill:none;stroke:#b9a4ff;stroke-opacity:.14;stroke-width:1}
+    .rd{fill:none;stroke:#b9a4ff;stroke-opacity:.12;stroke-width:1;stroke-dasharray:1 9}
+    .o{transform-box:view-box;transform-origin:50% 50%;animation:spin 240s linear infinite}
+    .o2{animation-duration:360s;animation-direction:reverse}
+    .o3{animation-duration:520s}
+    .n{fill:#b9a4ff;fill-opacity:.55}.g{fill:#e8c987;fill-opacity:.6}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media (prefers-reduced-motion:reduce){.o{animation:none}}
+  </style>
+  <g class="o"><circle class="r" cx="600" cy="600" r="260"/><circle class="n" cx="600" cy="340" r="4"/><circle class="n" cx="826" cy="730" r="3"/></g>
+  <g class="o o2"><ellipse class="r" cx="600" cy="600" rx="420" ry="300" transform="rotate(-18 600 600)"/><circle class="g" cx="1020" cy="600" r="4" transform="rotate(-18 600 600)"/></g>
+  <g class="o o3"><circle class="rd" cx="600" cy="600" r="560"/><circle class="n" cx="40" cy="600" r="3"/><circle class="n" cx="600" cy="1160" r="4"/></g>
+  <circle class="r" cx="600" cy="600" r="150"/>
+</svg>

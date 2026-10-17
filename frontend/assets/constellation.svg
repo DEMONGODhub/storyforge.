@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" role="img" aria-label="Constellation of story ideas">
+  <title>Constellation of story ideas</title>
+  <style>
+    .ln{stroke:#b9a4ff;stroke-opacity:.30;stroke-width:1;fill:none}
+    .alt{stroke:#b9a4ff;stroke-opacity:.30;stroke-width:1;fill:none;stroke-dasharray:3 6}
+    .st{fill:#e9e4f5;animation:tw 6s ease-in-out infinite}
+    .nd{fill:#b9a4ff;animation:fl 14s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+    .gd{fill:#e8c987}
+    .d1{animation-delay:-1s}.d2{animation-delay:-2.5s}.d3{animation-delay:-4s}.d4{animation-delay:-5s}
+    @keyframes tw{0%,100%{opacity:.35}50%{opacity:1}}
+    @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+    @media (prefers-reduced-motion:reduce){.st,.nd{animation:none}}
+  </style>
+  <!-- relationships -->
+  <path class="ln" d="M20 170 L110 120 L200 150 L290 90 L380 130 L470 80"/>
+  <path class="ln" d="M110 120 L130 40 L200 60 L290 90"/>
+  <!-- alternate story possibilities (branches) -->
+  <path class="alt" d="M380 130 L450 190 L540 200 L620 170"/>
+  <path class="alt" d="M470 80 L540 60 L620 90"/>
+  <!-- stars = ideas -->
+  <g>
+    <circle class="st" cx="20" cy="170" r="2"/><circle class="st d1" cx="130" cy="40" r="2.2"/><circle class="st d2" cx="200" cy="60" r="1.8"/>
+    <circle class="st d3" cx="450" cy="190" r="2"/><circle class="st d4" cx="540" cy="200" r="1.8"/><circle class="st d1" cx="620" cy="170" r="2.2"/>
+    <circle class="st d2" cx="540" cy="60" r="2"/><circle class="st d3" cx="620" cy="90" r="1.8"/>
+  </g>
+  <!-- nodes = characters / events -->
+  <g>
+    <circle class="nd" cx="110" cy="120" r="5"/><circle class="nd d2" cx="200" cy="150" r="4"/>
+    <circle class="nd d3" cx="290" cy="90" r="6"/><circle class="nd d1" cx="380" cy="130" r="4.5"/>
+    <circle class="nd gd d4" cx="470" cy="80" r="5.5"/>
+  </g>
+</svg>

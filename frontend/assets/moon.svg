@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Moon">
+  <title>Moon</title>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset=".45" stop-color="#a88cff" stop-opacity=".30"/>
+      <stop offset="1" stop-color="#a88cff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="face" cx="36%" cy="32%" r="80%">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset=".6" stop-color="#d9d1ee"/>
+      <stop offset="1" stop-color="#8d82ad"/>
+    </radialGradient>
+    <mask id="shade">
+      <rect width="400" height="400" fill="#fff"/>
+      <circle cx="262" cy="170" r="132" fill="#000" opacity=".82"/>
+    </mask>
+  </defs>
+  <style>
+    .halo{animation:breathe 9s ease-in-out infinite;transform-box:view-box;transform-origin:50% 50%}
+    @keyframes breathe{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+    @media (prefers-reduced-motion:reduce){.halo{animation:none}}
+  </style>
+  <circle class="halo" cx="200" cy="200" r="198" fill="url(#glow)"/>
+  <g mask="url(#shade)">
+    <circle cx="200" cy="200" r="104" fill="url(#face)"/>
+    <g fill="#8d82ad" fill-opacity=".22">
+      <circle cx="160" cy="176" r="15"/><circle cx="196" cy="236" r="10"/><circle cx="148" cy="226" r="7"/><circle cx="214" cy="160" r="6"/>
+    </g>
+  </g>
+  <circle cx="200" cy="200" r="104" fill="none" stroke="#e9e4f5" stroke-opacity=".18"/>
+</svg>

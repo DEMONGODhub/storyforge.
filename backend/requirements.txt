@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+httpx
+python-multipart
+fpdf2
+# optional — only for voice transcription (downloads a small speech model on first use):
+# faster-whisper
